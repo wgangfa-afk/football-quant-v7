@@ -1,4 +1,5 @@
 """All ordinary tests are offline, including accidental network calls."""
+
 import socket
 
 import pytest

@@ -1,0 +1,6 @@
+TEST ONLY — synthetic mathematical fixture, not a real match or webpage.
+Home Test v Away Test | 2030-01-01T13:00:00Z | Test League
+Independent fixed model inputs: lambda_home=1.6 lambda_away=1.1 rho=-0.08
+1X2 decimal: home 2.10 draw 3.40 away 3.60
+Asian home -0.25 HK 0.92, away +0.25 HK 0.94
+The example.com URL is a reserved example domain, not a claimed source retrieval.
