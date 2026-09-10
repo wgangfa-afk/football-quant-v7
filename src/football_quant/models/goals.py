@@ -2,6 +2,7 @@
 
 from dataclasses import dataclass
 from math import exp
+from typing import Literal
 
 from football_quant.domain import number, probability
 
@@ -10,6 +11,22 @@ from football_quant.domain import number, probability
 class Scores:
     matrix: tuple[tuple[float, ...], ...]
     omitted_mass: float
+    family: Literal["goals", "corners", "cards"] = "goals"
+
+    def __post_init__(self) -> None:
+        if self.family not in ("goals", "corners", "cards"):
+            raise ValueError("invalid distribution family")
+        if not self.matrix or not self.matrix[0]:
+            raise ValueError("empty distribution")
+        width = len(self.matrix[0])
+        for row in self.matrix:
+            if len(row) != width:
+                raise ValueError("nonrectangular distribution")
+            for p in row:
+                probability(p)
+        if abs(sum(map(sum, self.matrix)) - 1) > 1e-8:
+            raise ValueError("distribution must sum to one")
+        probability(self.omitted_mass)
 
     def result(self) -> tuple[float, float, float]:
         return tuple(
@@ -43,6 +60,7 @@ def poisson(mean: float, tolerance: float = 1e-12) -> tuple[float, ...]:
 
 
 def score_matrix(home: float, away: float, rho: float = 0) -> Scores:
+    home, away = number(home, "lambda home"), number(away, "lambda away")
     h, a = poisson(home), poisson(away)
     rho = number(rho, "rho")
     corrections = {
@@ -57,4 +75,4 @@ def score_matrix(home: float, away: float, rho: float = 0) -> Scores:
         tuple(x * y * corrections.get((i, j), 1) for j, y in enumerate(a)) for i, x in enumerate(h)
     )
     total = sum(map(sum, raw))
-    return Scores(tuple(tuple(p / total for p in row) for row in raw), 1 - sum(h) * sum(a))
+    return Scores(tuple(tuple(p / total for p in row) for row in raw), max(0, 1 - sum(h) * sum(a)))

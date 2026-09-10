@@ -1,0 +1,94 @@
+TEST ONLY synthetic research package. Not a real webpage or fixture.
+{"id": "test-full", "home": "测试主队", "away": "测试客队", "competition": "合成联赛", "kickoff": "2030-01-01T13:00:00+00:00", "evidence_ids": ["e1"]}
+{"away": 1.2, "home": 1.5, "same_basis": true}
+{"goals_against": 2, "goals_for": 2, "opponent_attack": 1.0, "opponent_defence": 1.0, "played": "2029-12-25T10:00:00+00:00", "venue": "home"}
+{"goals_against": 1, "goals_for": 3, "opponent_attack": 1.0, "opponent_defence": 1.0, "played": "2029-12-18T10:00:00+00:00", "venue": "home"}
+{"goals_against": 2, "goals_for": 1, "opponent_attack": 1.0, "opponent_defence": 1.0, "played": "2029-12-11T10:00:00+00:00", "venue": "home"}
+{"goals_against": 1, "goals_for": 2, "opponent_attack": 1.0, "opponent_defence": 1.0, "played": "2029-12-04T10:00:00+00:00", "venue": "home"}
+{"goals_against": 2, "goals_for": 3, "opponent_attack": 1.0, "opponent_defence": 1.0, "played": "2029-11-27T10:00:00+00:00", "venue": "home"}
+{"goals_against": 1, "goals_for": 1, "opponent_attack": 1.0, "opponent_defence": 1.0, "played": "2029-11-20T10:00:00+00:00", "venue": "home"}
+{"goals_against": 2, "goals_for": 2, "opponent_attack": 1.0, "opponent_defence": 1.0, "played": "2029-11-13T10:00:00+00:00", "venue": "home"}
+{"goals_against": 1, "goals_for": 3, "opponent_attack": 1.0, "opponent_defence": 1.0, "played": "2029-11-06T10:00:00+00:00", "venue": "home"}
+{"goals_against": 2, "goals_for": 2, "opponent_attack": 1.0, "opponent_defence": 1.0, "played": "2029-12-25T10:00:00+00:00", "venue": "away"}
+{"goals_against": 1, "goals_for": 3, "opponent_attack": 1.0, "opponent_defence": 1.0, "played": "2029-12-18T10:00:00+00:00", "venue": "away"}
+{"goals_against": 2, "goals_for": 1, "opponent_attack": 1.0, "opponent_defence": 1.0, "played": "2029-12-11T10:00:00+00:00", "venue": "away"}
+{"goals_against": 1, "goals_for": 2, "opponent_attack": 1.0, "opponent_defence": 1.0, "played": "2029-12-04T10:00:00+00:00", "venue": "away"}
+{"goals_against": 2, "goals_for": 3, "opponent_attack": 1.0, "opponent_defence": 1.0, "played": "2029-11-27T10:00:00+00:00", "venue": "away"}
+{"goals_against": 1, "goals_for": 1, "opponent_attack": 1.0, "opponent_defence": 1.0, "played": "2029-11-20T10:00:00+00:00", "venue": "away"}
+{"goals_against": 2, "goals_for": 2, "opponent_attack": 1.0, "opponent_defence": 1.0, "played": "2029-11-13T10:00:00+00:00", "venue": "away"}
+{"goals_against": 1, "goals_for": 3, "opponent_attack": 1.0, "opponent_defence": 1.0, "played": "2029-11-06T10:00:00+00:00", "venue": "away"}
+{"count": 1, "units": "corners"}
+{"count": 2, "units": "corners"}
+{"count": 3, "units": "corners"}
+{"count": 4, "units": "corners"}
+{"count": 5, "units": "corners"}
+{"count": 1, "units": "corners"}
+{"count": 2, "units": "corners"}
+{"count": 3, "units": "corners"}
+{"count": 1, "units": "corners"}
+{"count": 2, "units": "corners"}
+{"count": 3, "units": "corners"}
+{"count": 4, "units": "corners"}
+{"count": 5, "units": "corners"}
+{"count": 1, "units": "corners"}
+{"count": 2, "units": "corners"}
+{"count": 3, "units": "corners"}
+{"count": 1, "units": "corners"}
+{"count": 2, "units": "corners"}
+{"count": 3, "units": "corners"}
+{"count": 4, "units": "corners"}
+{"count": 5, "units": "corners"}
+{"count": 1, "units": "corners"}
+{"count": 2, "units": "corners"}
+{"count": 3, "units": "corners"}
+{"count": 1, "units": "corners"}
+{"count": 2, "units": "corners"}
+{"count": 3, "units": "corners"}
+{"count": 4, "units": "corners"}
+{"count": 5, "units": "corners"}
+{"count": 1, "units": "corners"}
+{"count": 2, "units": "corners"}
+{"count": 3, "units": "corners"}
+{"count": 1, "units": "yellow_cards"}
+{"count": 2, "units": "yellow_cards"}
+{"count": 3, "units": "yellow_cards"}
+{"count": 4, "units": "yellow_cards"}
+{"count": 5, "units": "yellow_cards"}
+{"count": 1, "units": "yellow_cards"}
+{"count": 2, "units": "yellow_cards"}
+{"count": 3, "units": "yellow_cards"}
+{"count": 1, "units": "yellow_cards"}
+{"count": 2, "units": "yellow_cards"}
+{"count": 3, "units": "yellow_cards"}
+{"count": 4, "units": "yellow_cards"}
+{"count": 5, "units": "yellow_cards"}
+{"count": 1, "units": "yellow_cards"}
+{"count": 2, "units": "yellow_cards"}
+{"count": 3, "units": "yellow_cards"}
+{"count": 1, "units": "yellow_cards"}
+{"count": 2, "units": "yellow_cards"}
+{"count": 3, "units": "yellow_cards"}
+{"count": 4, "units": "yellow_cards"}
+{"count": 5, "units": "yellow_cards"}
+{"count": 1, "units": "yellow_cards"}
+{"count": 2, "units": "yellow_cards"}
+{"count": 3, "units": "yellow_cards"}
+{"count": 1, "units": "yellow_cards"}
+{"count": 2, "units": "yellow_cards"}
+{"count": 3, "units": "yellow_cards"}
+{"count": 4, "units": "yellow_cards"}
+{"count": 5, "units": "yellow_cards"}
+{"count": 1, "units": "yellow_cards"}
+{"count": 2, "units": "yellow_cards"}
+{"count": 3, "units": "yellow_cards"}
+{"bookmaker": "TEST BOOK", "line": null, "market": "1x2", "original_format": "EU", "original_value": "2.10", "rules": "regular_time", "selection": "home"}
+{"bookmaker": "TEST BOOK", "line": null, "market": "1x2", "original_format": "EU", "original_value": "2.10", "rules": "regular_time", "selection": "draw"}
+{"bookmaker": "TEST BOOK", "line": null, "market": "1x2", "original_format": "EU", "original_value": "2.10", "rules": "regular_time", "selection": "away"}
+{"bookmaker": "TEST BOOK", "line": "5.25", "market": "corner_total", "original_format": "HK", "original_value": ".95", "rules": "regular_time_corners", "selection": "over"}
+{"bookmaker": "TEST BOOK", "line": "5.25", "market": "corner_total", "original_format": "HK", "original_value": ".95", "rules": "regular_time_corners", "selection": "under"}
+{"bookmaker": "TEST BOOK", "line": "5.25", "market": "card_total", "original_format": "HK", "original_value": ".95", "rules": "regular_time_yellow_cards", "selection": "over"}
+{"bookmaker": "TEST BOOK", "line": "5.25", "market": "card_total", "original_format": "HK", "original_value": ".95", "rules": "regular_time_yellow_cards", "selection": "under"}
+{"key": "personnel", "value": "合成测试上下文，非实战事实"}
+{"key": "tactics", "value": "合成测试上下文，非实战事实"}
+{"key": "schedule", "value": "合成测试上下文，非实战事实"}
+{"key": "motivation", "value": "合成测试上下文，非实战事实"}

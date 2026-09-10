@@ -42,13 +42,18 @@ DIRECTIONS = {
 }
 
 
+def decimal_text(value: float | None) -> str:
+    return "缺失" if value is None else f"{value:.3f}"
+
+
 def percentage(value: float | None) -> str:
     return "缺失" if value is None else f"{value:.2%}"
 
 
 def selection(candidate: Candidate) -> str:
     q = candidate.quote
-    line = "" if q.line is None else f" {q.line:+}"
+    handicap = q.market in (Market.HANDICAP, Market.CORNER_HANDICAP, Market.CARD_HANDICAP)
+    line = "" if q.line is None else f" {q.line:+}" if handicap else f" {q.line}"
     display = DIRECTIONS.get(q.selection, q.selection)
     return f"{LABELS[q.market]} {display}{line}"
 
@@ -82,6 +87,15 @@ def configure(doc: DocumentType) -> None:
 def table(doc: DocumentType, headers: tuple[str, ...], rows: list[tuple[str, ...]]) -> None:
     t = doc.add_table(rows=1, cols=len(headers))
     t.autofit = False
+    ratios = (
+        (1, 1.6, 1.3, 0.5, 2)
+        if len(headers) == 5
+        else (2, 2, 0.6)
+        if len(headers) == 3 and headers[-1] == "等级"
+        else (1,) * len(headers)
+    )
+    for column, ratio in zip(t.columns, ratios, strict=True):
+        column.width = Inches(6.9 * ratio / sum(ratios))
     for cell, label in zip(t.rows[0].cells, headers, strict=True):
         cell.text = label
         shade = OxmlElement("w:shd")
@@ -140,6 +154,16 @@ def summary(report: Report) -> str:
 
 def candidate_detail(doc: DocumentType, candidate: Candidate) -> None:
     c, p = candidate, candidate.price
+    doc.add_paragraph(
+        f"报价来源 [{c.quote.evidence_id}]；博彩公司 {c.quote.bookmaker}；"
+        f"原始显示 {c.quote.original_format} {c.quote.original_value}；规则 "
+        + {
+            "regular_time": "全场常规时间",
+            "regular_time_corners": "全场常规时间角球",
+            "regular_time_yellow_cards": "全场常规时间黄牌张数",
+        }.get(c.quote.rules, c.quote.rules)
+        + "。"
+    )
     doc.add_heading(f"{selection(c)}  {c.grade.value}", level=3)
     doc.add_paragraph(
         f"{display_odds(c)}；综合置信评分 {percentage(c.confidence)}"
@@ -191,6 +215,14 @@ def write_report(report: Report, path: Path) -> None:
     )
     doc.add_heading("核心摘要与数据完整度", 1)
     doc.add_paragraph(summary(report))
+    directions = [(m, c) for m in report.matches for c in m.candidates if c.grade is not Grade.PASS]
+    for match, c in directions:
+        doc.add_paragraph(
+            f"{match.fixture.home} 对 {match.fixture.away}：{selection(c)}，"
+            f"{display_odds(c)}，等级{c.grade.value}，EV {c.price.ev:+.2%}。"
+        )
+    if not directions:
+        doc.add_paragraph("本次没有可给出方向的候选；具体缺失及PASS原因见下文。")
     for note in report.coverage_notes:
         doc.add_paragraph(note)
     doc.add_heading("全部赛事扫描表", 1)
@@ -200,17 +232,21 @@ def write_report(report: Report, path: Path) -> None:
             f"{m.fixture.home} 对 {m.fixture.away}",
             m.fixture.competition,
             "／".join(sorted({c.grade.value for c in m.candidates})) or "PASS",
+            "；".join(m.missing + m.conflicts) or "已定价，详见候选",
         )
         for m in report.matches
     ]
-    table(doc, ("北京时间", "比赛", "赛事", "等级"), rows)
+    table(doc, ("北京时间", "比赛", "赛事", "等级", "缺失或原因"), rows)
     pools(doc, report)
     doc.add_heading("深度比赛分析与概率定价", 1)
     for match in report.matches:
         doc.add_heading(f"{match.fixture.home} 对 {match.fixture.away}", 2)
         for note in match.notes:
             doc.add_paragraph(note)
-        doc.add_paragraph(f"主队预期进球 {match.lambda_home}；客队预期进球 {match.lambda_away}。")
+        doc.add_paragraph(
+            f"主队预期进球 {decimal_text(match.lambda_home)}；"
+            f"客队预期进球 {decimal_text(match.lambda_away)}。"
+        )
         doc.add_paragraph("常见比分：" + "、".join(f"{i}:{j} {p:.1%}" for i, j, p in match.scores))
         for c in match.candidates:
             candidate_detail(doc, c)

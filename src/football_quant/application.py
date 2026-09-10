@@ -1,6 +1,7 @@
 """Application orchestration and explicit test demonstration."""
 
 import argparse
+from dataclasses import replace
 from datetime import UTC, datetime
 from decimal import Decimal
 from hashlib import sha256
@@ -118,6 +119,7 @@ def main() -> None:
     parser.add_argument("command", choices=("demo", "analyze"))
     parser.add_argument("--output", type=Path, default=Path("outputs/m1-test.docx"))
     parser.add_argument("--input", type=Path)
+    parser.add_argument("--generated-at", help="Explicit aware time for deterministic reruns")
     args = parser.parse_args()
     if args.command == "demo":
         report = demo()
@@ -125,6 +127,12 @@ def main() -> None:
         if args.input is None:
             parser.error("analyze requires --input")
         research = load_research(args.input)
+        if args.generated_at:
+            from football_quant.acquisition.imports import timestamp
+
+            research = replace(research, generated=timestamp(args.generated_at))
+        elif research.mode is Mode.LIVE:
+            research = replace(research, generated=datetime.now(UTC))
         report = Report(
             research.mode,
             research.started,

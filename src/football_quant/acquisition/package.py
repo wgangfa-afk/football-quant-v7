@@ -11,6 +11,7 @@ from football_quant.acquisition.imports import (
     timestamp,
 )
 from football_quant.domain import Mode
+from football_quant.evidence.merge import merge_matches
 from football_quant.evidence.research import Research, ResearchMatch, supported_value
 from football_quant.evidence.verification import Claim
 from football_quant.storage.files import read_json, verify_snapshot
@@ -67,7 +68,7 @@ def load_research(path: Path) -> Research:
         end,
         generated,
         sources,
-        tuple(matches),
+        merge_matches(tuple(matches)),
         tuple(raw["coverage_notes"]),
         path.parent,
     )

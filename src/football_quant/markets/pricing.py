@@ -49,6 +49,13 @@ def price(
     market_probability: float | None,
     penalty: Decimal = Decimal("0.03"),
 ) -> Price:
+    expected = "goals"
+    if quote.market in (Market.CORNER_TOTAL, Market.CORNER_HANDICAP):
+        expected = "corners"
+    if quote.market in (Market.CARD_TOTAL, Market.CARD_HANDICAP):
+        expected = "cards"
+    if scores.family != expected:
+        raise ValueError("market and probability distribution family mismatch")
     probability(penalty, "risk penalty")
     if market_probability is not None:
         probability(market_probability)

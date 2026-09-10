@@ -42,7 +42,10 @@ class Market(StrEnum):
 def number(value: object, name: str, minimum: float | None = None) -> float:
     if isinstance(value, bool) or not isinstance(value, (int, float, Decimal)):
         raise ValueError(f"{name}: finite numeric input required")
-    result = float(value)
+    try:
+        result = float(value)
+    except OverflowError as exc:
+        raise ValueError(f"{name}: numeric overflow") from exc
     if not isfinite(result) or (minimum is not None and result < minimum):
         raise ValueError(f"{name}: invalid finite range")
     return result
@@ -137,6 +140,22 @@ class Price:
     risk_ev: Decimal
     states: tuple[float, float, float, float, float]
 
+    def __post_init__(self) -> None:
+        for value in (self.model_probability, self.implied_probability):
+            probability(value)
+        if self.devig_probability is not None:
+            probability(self.devig_probability)
+        for value in self.states:
+            probability(value)
+        if len(self.states) != 5 or abs(sum(self.states) - 1) > 1e-8:
+            raise ValueError("five settlement probabilities must sum to one")
+        for value in (self.ev, self.risk_ev, self.current_odds):
+            number(value, "price")
+        if self.current_odds <= 1 or self.risk_ev > self.ev:
+            raise ValueError("invalid odds or risk EV")
+        if self.fair_odds is not None and number(self.fair_odds, "fair odds") < 1:
+            raise ValueError("fair odds must be at least one")
+
 
 @dataclass(frozen=True)
 class Candidate:
@@ -151,6 +170,12 @@ class Candidate:
     risks: tuple[str, ...]
     reasons: tuple[str, ...]
     score_components: tuple[tuple[str, float], ...]
+
+    def __post_init__(self) -> None:
+        probability(self.confidence)
+        probability(self.completeness)
+        if self.grade is not Grade.PASS and self.price is None:
+            raise ValueError("non-PASS requires price")
 
 
 @dataclass(frozen=True)
@@ -180,5 +205,13 @@ class Report:
             aware(value)
         if self.deadline <= self.started or self.generated < self.started:
             raise ValueError("invalid report time window")
+        ids = {e.id for e in self.evidence}
+        if len(ids) != len(self.evidence):
+            raise ValueError("duplicate report evidence IDs")
+        for match in self.matches:
+            if any(e not in ids for e in match.fixture.evidence_ids):
+                raise ValueError("unknown fixture evidence")
+            if any(c.quote.evidence_id not in ids for c in match.candidates):
+                raise ValueError("unknown quote evidence")
         if self.mode is Mode.LIVE and any(e.mode is Mode.TEST for e in self.evidence):
             raise ValueError("test evidence forbidden in live report")
