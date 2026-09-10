@@ -6,6 +6,8 @@ from decimal import Decimal
 from hashlib import sha256
 from pathlib import Path
 
+from football_quant.acquisition.package import load_research
+from football_quant.decisions.analysis import analyze_match
 from football_quant.decisions.rating import Assessment, recommend
 from football_quant.domain import (
     Evidence,
@@ -21,6 +23,7 @@ from football_quant.markets.odds import devig
 from football_quant.markets.pricing import price
 from football_quant.models.goals import score_matrix
 from football_quant.reporting.word import summary, write_report
+from football_quant.storage.files import save_report
 
 
 def demo() -> Report:
@@ -112,10 +115,26 @@ def demo() -> Report:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Football Quant V7")
-    parser.add_argument("command", choices=("demo",))
+    parser.add_argument("command", choices=("demo", "analyze"))
     parser.add_argument("--output", type=Path, default=Path("outputs/m1-test.docx"))
+    parser.add_argument("--input", type=Path)
     args = parser.parse_args()
-    report = demo()
+    if args.command == "demo":
+        report = demo()
+    else:
+        if args.input is None:
+            parser.error("analyze requires --input")
+        research = load_research(args.input)
+        report = Report(
+            research.mode,
+            research.started,
+            research.deadline,
+            research.generated,
+            research.evidence,
+            tuple(analyze_match(m, research) for m in research.matches),
+            research.coverage,
+        )
+    save_report(report, args.output.with_suffix(".json"))
     write_report(report, args.output)
     print(summary(report))
 
