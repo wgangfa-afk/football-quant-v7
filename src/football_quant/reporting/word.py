@@ -9,7 +9,7 @@ from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.shared import Inches, Pt, RGBColor
 
-from football_quant.domain import Candidate, Grade, Market, Report
+from football_quant.domain import Candidate, Grade, Market, Qualitative, Report
 
 SHANGHAI = ZoneInfo("Asia/Shanghai")
 ASIAN = {
@@ -39,6 +39,12 @@ DIRECTIONS = {
     "under": "小",
     "yes": "是",
     "no": "否",
+}
+STATUS_LABELS = {
+    "verified": "已核验",
+    "missing": "有缺失",
+    "uncertain": "不确定",
+    "conflict": "有冲突",
 }
 
 
@@ -72,11 +78,11 @@ def configure(doc: DocumentType) -> None:
     section.top_margin = section.bottom_margin = Inches(0.7)
     for name in ("Normal", "Title", "Heading 1", "Heading 2", "Heading 3"):
         style = doc.styles[name]
-        style.font.name = "Noto Sans CJK SC"
+        style.font.name = "Noto Sans SC"
         for border in style.element.findall(".//" + qn("w:pBdr")):
             border.getparent().remove(border)
         style.font.color.rgb = RGBColor(0, 0, 0)
-        style.element.get_or_add_rPr().rFonts.set(qn("w:eastAsia"), "Noto Sans CJK SC")
+        style.element.get_or_add_rPr().rFonts.set(qn("w:eastAsia"), "Noto Sans SC")
     doc.styles["Normal"].font.size = Pt(10.5)
     doc.styles["Normal"].paragraph_format.space_after = Pt(6)
     doc.styles["Title"].font.size = Pt(22)
@@ -114,6 +120,7 @@ def table(doc: DocumentType, headers: tuple[str, ...], rows: list[tuple[str, ...
         borders.append(item)
     t._tbl.tblPr.append(borders)
     for row in t.rows:
+        row._tr.get_or_add_trPr().append(OxmlElement("w:cantSplit"))
         for cell in row.cells:
             cell.vertical_alignment = 1
             for p in cell.paragraphs:
@@ -165,10 +172,19 @@ def candidate_detail(doc: DocumentType, candidate: Candidate) -> None:
         + "。"
     )
     doc.add_heading(f"{selection(c)}  {c.grade.value}", level=3)
+    doc.add_paragraph(f"该选项量化能力：{c.capability.value}；决策结果：{c.decision.value}。")
     doc.add_paragraph(
-        f"{display_odds(c)}；综合置信评分 {percentage(c.confidence)}"
-        f"（非胜率）；完整度 {percentage(c.completeness)}。"
+        f"可计算优势：{c.advantage.value}；数据状态：{STATUS_LABELS[c.data_status]}。"
     )
+    if c.missing_fields:
+        doc.add_paragraph("缺失字段：" + "；".join(c.missing_fields))
+    if p is None:
+        doc.add_paragraph("模型概率与EV：留空；未进行量化评级。")
+    else:
+        doc.add_paragraph(
+            f"{display_odds(c)}；综合置信评分 {percentage(c.confidence)}"
+            f"（非胜率）；完整度 {percentage(c.completeness)}。"
+        )
     if p:
         table(
             doc,
@@ -222,7 +238,8 @@ def write_report(report: Report, path: Path) -> None:
             f"{display_odds(c)}，等级{c.grade.value}，EV {c.price.ev:+.2%}。"
         )
     if not directions:
-        doc.add_paragraph("本次没有可给出方向的候选；具体缺失及PASS原因见下文。")
+        doc.add_paragraph("本次无入选的量化方向；定性方向与缺失项见逐场分析。")
+    doc.add_paragraph("资金决策：第一阶段未启用资金分配，无模拟下注金额。")
     for note in report.coverage_notes:
         doc.add_paragraph(note)
     doc.add_heading("全部赛事扫描表", 1)
@@ -232,7 +249,10 @@ def write_report(report: Report, path: Path) -> None:
             f"{m.fixture.home} 对 {m.fixture.away}",
             m.fixture.competition,
             "／".join(sorted({c.grade.value for c in m.candidates})) or "PASS",
-            "；".join(m.missing + m.conflicts) or "已定价，详见候选",
+            m.capability.value
+            + "；"
+            + "；".join((m.conflicts or m.missing)[:1])
+            + "；详见逐场说明",
         )
         for m in report.matches
     ]
@@ -241,6 +261,13 @@ def write_report(report: Report, path: Path) -> None:
     doc.add_heading("深度比赛分析与概率定价", 1)
     for match in report.matches:
         doc.add_heading(f"{match.fixture.home} 对 {match.fixture.away}", 2)
+        doc.add_paragraph(
+            f"数据状态：{STATUS_LABELS[match.data_status]}；分析能力：{match.capability.value}。"
+        )
+        doc.add_paragraph("模型来源：" + (match.model_source or "未运行有效概率模型"))
+        if match.missing_fields:
+            doc.add_paragraph("缺失字段：" + "；".join(match.missing_fields))
+        qualitative_detail(doc, match.qualitative)
         for note in match.notes:
             doc.add_paragraph(note)
         doc.add_paragraph(
@@ -253,6 +280,22 @@ def write_report(report: Report, path: Path) -> None:
     ending(doc, report)
     path.parent.mkdir(parents=True, exist_ok=True)
     doc.save(path)
+
+
+def qualitative_detail(doc: DocumentType, qualitative: Qualitative | None) -> None:
+    doc.add_heading("方向判断", 3)
+    if qualitative is None:
+        doc.add_paragraph("未提供通过核验的独立定性方向；量化候选与拒绝原因另列。")
+        return
+    doc.add_paragraph(qualitative.direction + "（研究者定性判断，无量化等级）")
+    for label, values in (
+        ("支持", qualitative.supports),
+        ("反向证据", qualitative.objections),
+        ("不确定性", qualitative.uncertainties),
+    ):
+        doc.add_paragraph(label + "：" + "；".join(values))
+    doc.add_paragraph("定性方向不代表已计算优势，不据此分配资金。")
+    doc.add_paragraph("可计算优势：定性判断本身不产生概率或EV，参见量化候选。")
 
 
 def pools(doc: DocumentType, report: Report) -> None:
@@ -310,9 +353,13 @@ def ending(doc: DocumentType, report: Report) -> None:
             f"采集 UTC {e.retrieved_at_utc.isoformat()}；页面观察时间 "
             f"{e.observed_at_utc or '未提供'}；核验 {e.validation_status.value}"
         )
+        doc.add_paragraph(
+            f"发布时间 UTC {e.published_at_utc or '未提供'}；方式 {e.extraction_method}；"
+            f"SHA256 {e.content_hash}"
+        )
     doc.add_heading("方法与风险说明", 1)
     doc.add_paragraph(
-        "比分采用 Poisson 和 Dixon–Coles；亚洲盘使用全赢、半赢、走、半输、全输"
+        "具备足够输入时，比分采用 Poisson 和 Dixon–Coles；亚洲盘使用全赢、半赢、走、半输、全输"
         "逐状态定价。亚洲盘模型有效概率不是全赢概率。"
     )
     doc.add_paragraph(

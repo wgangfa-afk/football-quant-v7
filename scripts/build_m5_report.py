@@ -100,6 +100,9 @@ def section(doc, title, text):
 
 
 def build():
+    raise RuntimeError(
+        "历史M5报告绕过了模型链路，已停用。请使用 football_quant.application analyze 和研究包。"
+    )
     doc = Document()
     configure(doc)
     doc.add_heading("明早六点前足球赛前分析报告", 0)

@@ -45,5 +45,11 @@ def merge_matches(matches: tuple[ResearchMatch, ...]) -> tuple[ResearchMatch, ..
             claims=tuple(dict.fromkeys(claims)),
             notes=old.notes + match.notes,
             missing=tuple(dict.fromkeys(old.missing + match.missing)),
+            qualitative=old.qualitative if old.qualitative == match.qualitative else None,
         )
+        if old.qualitative != match.qualitative:
+            result[key] = replace(
+                result[key],
+                missing=result[key].missing + ("重复发现的定性判断不一致，未静默选取其中一个方向",),
+            )
     return tuple(sorted(result.values(), key=lambda m: (m.fixture.kickoff, m.fixture.id)))

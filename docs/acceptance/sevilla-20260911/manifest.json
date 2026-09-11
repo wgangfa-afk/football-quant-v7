@@ -1,0 +1,153 @@
+{
+  "mode": "live",
+  "started": "2026-09-11T11:13:20+00:00",
+  "deadline": "2026-09-11T22:00:00+00:00",
+  "generated": "2026-09-11T11:26:56.082443+00:00",
+  "evidence": [
+    {
+      "id": "official",
+      "source_url": "https://www.valenciacf.com/previa-sevilla-fc-valencia-cf3",
+      "source_name": "Valencia CF 官方赛前",
+      "retrieved_at_utc": "2026-09-11T11:26:56.082443+00:00",
+      "observed_at_utc": null,
+      "published_at_utc": null,
+      "source_type": "official",
+      "content_hash": "b0477928974695efe6028e5d3e04ae4771365dc061fb325ef42623d5b3aa4ff2",
+      "extraction_method": "codex_public_web_reviewed_notes_registration_time",
+      "validation_status": "verified",
+      "mode": "live",
+      "snapshot_path": "official.txt"
+    },
+    {
+      "id": "market",
+      "source_url": "https://www.sportsgambler.com/betting-tips/football/sevilla-vs-valencia-prediction-lineups-odds-2026-09-11/",
+      "source_name": "Sportsgambler 公开统计与赔率页",
+      "retrieved_at_utc": "2026-09-11T11:26:56.082443+00:00",
+      "observed_at_utc": null,
+      "published_at_utc": null,
+      "source_type": "odds_page",
+      "content_hash": "6fcdf17beab3b7fdb3a28d878f3ff04f5a7713b07dedab0e6bdddadba1103b52",
+      "extraction_method": "codex_public_web_reviewed_notes_registration_time",
+      "validation_status": "verified",
+      "mode": "live",
+      "snapshot_path": "odds-stats.txt"
+    },
+    {
+      "id": "injury",
+      "source_url": "https://www.valenciacf.com/parte-medico-diakhaby2",
+      "source_name": "Valencia CF 官方医疗",
+      "retrieved_at_utc": "2026-09-11T11:26:56.082443+00:00",
+      "observed_at_utc": null,
+      "published_at_utc": null,
+      "source_type": "official",
+      "content_hash": "5011bdf757ddf781d56160f3e5df773e4eee6e39045c70d07f8637cc9896d511",
+      "extraction_method": "codex_public_web_reviewed_notes_registration_time",
+      "validation_status": "verified",
+      "mode": "live",
+      "snapshot_path": "injury.txt"
+    },
+    {
+      "id": "schedule",
+      "source_url": "https://as.com/futbol/primera/sevilla-valencia-tv-a-que-hora-es-donde-y-como-ver-laliga-ea-sports-online-hoy-f202609-n/",
+      "source_name": "AS 赛前报道",
+      "retrieved_at_utc": "2026-09-11T11:26:56.082443+00:00",
+      "observed_at_utc": null,
+      "published_at_utc": null,
+      "source_type": "news",
+      "content_hash": "87471acf9a9987a8d3c0051d9baed8020b9c703a81ee72bf89a974aee372e825",
+      "extraction_method": "codex_public_web_reviewed_notes_registration_time",
+      "validation_status": "verified",
+      "mode": "live",
+      "snapshot_path": "schedule-news.txt"
+    }
+  ],
+  "matches": [
+    {
+      "fixture": {
+        "id": "sevilla-valencia-20260911",
+        "home": "塞维利亚",
+        "away": "瓦伦西亚",
+        "competition": "西甲",
+        "kickoff": "2026-09-11T19:00:00+00:00",
+        "evidence_ids": [
+          "official",
+          "schedule"
+        ]
+      },
+      "quotes": [
+        {
+          "market": "1x2",
+          "selection": "home",
+          "line": null,
+          "original_value": "1.95",
+          "original_format": "EU",
+          "bookmaker": "未标明具体机构（聚合页）",
+          "rules": "unconfirmed",
+          "evidence_id": "market",
+          "excerpt": "1 1.95 X 3.30 2 4.10"
+        }
+      ],
+      "claims": [
+        {
+          "key": "personnel",
+          "value": "Diakhaby官方伤情已确认，康复时点未知；不擅自换算为进球修正",
+          "evidence_id": "injury",
+          "excerpt": "PARTE MÉDICO | DIAKHABY\n网页事实转记：俱乐部说明Diakhaby左腿长收肌受伤，伤于对巴塞罗那的比赛；将接受治疗和康复，待恢复后重新合练。2026-09-09的官方医疗消息未提供本次可用的完整UTC发布时间；不得推断精确复出日期。"
+        }
+      ],
+      "history": {},
+      "notes": [
+        "本场身份与时间由官方赛前和AS核对：北京时间9月12日03:00。这里只验收单场，不是全球扫描。",
+        "方向为研究者根据事实形成的定性判断，未使用网站的预测概率作为本项目独立模型概率。",
+        "主胜原始欧赔1.95；同栏平3.30、客4.10保留在证据摘录，但具体博彩公司、观察时刻和结算细则未核验。无可执行EV。",
+        "近10场西甲主客场汇总已取得：塞维利亚主场场均进1.10失1.20，瓦伦西亚客场进1.30失1.30。汇总均值不展开成虚构逐场样本。",
+        "数据齐全不等于模型已经验证；当前基线与xG混合参数均未实证校准。此次未生成λ或概率。"
+      ],
+      "missing": [
+        "history.home/away：缺带日期、对手攻防因子的逐场主客拆分记录",
+        "history.baseline：缺同口径联赛主客进球均值与桥接核验",
+        "odds.observed_at_utc、bookmaker、rules：未核验",
+        "xG口径与逐场样本缺失；不是单独的整场拒绝理由",
+        "角球有汇总和报价显示，但缺逐场计数；罚牌缺独立样本及报价"
+      ],
+      "qualitative": {
+        "direction": "塞维利亚主胜轻微倾向，仅作定性观察，不支持据此判断深让盘口",
+        "supports": [
+          {
+            "evidence_id": "schedule",
+            "excerpt": "网页搜索事实转记：AS当日赛前报道，塞维利亚对瓦伦西亚为2026-09-11西班牙当地21:00开赛。塞维利亚前4场7分；瓦伦西亚前4场1分、进1球失9球。北京时间对应2026-09-12 03:00。文章发布时间并非赔率观察时间。",
+            "reasoning": "主队近期结果优于客队，客队进球困难；仅作状态线索，不将排名直接等同实力。"
+          },
+          {
+            "evidence_id": "injury",
+            "excerpt": "PARTE MÉDICO | DIAKHABY\n网页事实转记：俱乐部说明Diakhaby左腿长收肌受伤，伤于对巴塞罗那的比赛；将接受治疗和康复，待恢复后重新合练。2026-09-09的官方医疗消息未提供本次可用的完整UTC发布时间；不得推断精确复出日期。",
+            "reasoning": "客队后防伤情为进攻端的潜在有利因素，但影响幅度未知。"
+          }
+        ],
+        "objections": [
+          {
+            "evidence_id": "official",
+            "excerpt": "PREVIA | SEVILLA FC – VALENCIA CF\nHora: 21:00 h\n网页事实摘录与中文转记：2026-09-11，西甲2026/27第5轮，塞维利亚主场对瓦伦西亚，Sánchez-Pizjuán球场。时间为西班牙当地时间。瓦伦西亚此前四次作客该场取得2胜2平。塞维利亚上一场客场战平西班牙人。页面发布日期只有2026-09-11，未提供完整时刻与时区。",
+            "reasoning": "瓦伦西亚此前四次作客此球场2胜2平，提醒不能把本赛季短期低迷等同必败。"
+          },
+          {
+            "evidence_id": "market",
+            "excerpt": "Full-Time Result\n1 1.95 X 3.30 2 4.10\n网页事实转记：欧赔显示主1.95、平3.30、客4.10；未标明本组具体博彩公司、赔率观察时刻和完整结算条款。文章Last Updated字段Sep 11, 09:38不是赔率时间，且时区未提供。近10场西甲主客场汇总：塞维利亚主场4胜3平3负，场均进1.10失1.20；瓦伦西亚客场4胜1平5负，场均进1.30失1.30。只有汇总，逐场日期、对手攻防因子及同口径联赛基准不足。页面还显示总角球8.5，大1.89、小1.79；未取得对应逐场角球与罚牌记录。不同栏目的推荐价与当前展示价可能不同，不能当成同一时点盘口。",
+            "reasoning": "双方近10场对应主客场进失球均值接近，不支持主队具有显著大胜优势。"
+          }
+        ],
+        "uncertainties": [
+          "主队人员调整和双方战术对位尚未充分核验；历史交锋不能代替当前实力。",
+          "官方首发尚未采集，不作为门禁；已确认伤病按事实披露，无量化修正。",
+          "缺少独立模型输入与可信时效报价，不能判断市场是否低估主胜。"
+        ]
+      }
+    }
+  ],
+  "coverage_notes": [
+    "真实网页验收状态：部分完成。比赛身份、开赛时间、可见赔率、汇总统计、伤情及定性方向已保存；概率→EV受阻，不能声称已打通真实量化全链。",
+    "本次初始采集内使用官方网页、AS及Sportsgambler替代来源；官方数据中心仅返回标题，球队页链接未能解析，其他搜索未补齐逐场对手因子；未绕过访问限制。",
+    "来源文件为可核对URL的短摘录与中文事实转记，非原始完整HTML。retrieved_at_utc登记本次转记入包时刻，非逐次网页请求的精确响应时间。来源未提供可核验UTC时刻的字段均留空。",
+    "页面发布时间与Last Updated不冒充赔率观察时间；未确认具体博彩公司，不将聚合页称为bet365盘口。"
+  ]
+}

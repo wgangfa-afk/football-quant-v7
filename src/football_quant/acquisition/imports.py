@@ -48,6 +48,18 @@ def fixture_record(row: dict[str, Any]) -> Fixture:
 
 
 def quote_record(row: dict[str, Any]) -> Quote:
+    required = (
+        "market",
+        "selection",
+        "original_value",
+        "original_format",
+        "evidence_id",
+        "bookmaker",
+        "rules",
+    )
+    missing = tuple(k for k in required if not row.get(k))
+    if missing:
+        raise ValueError("missing quote fields: " + ", ".join(missing))
     original = row["original_value"]
     if not isinstance(original, str):
         raise ValueError("original odds must retain page text as a string")
