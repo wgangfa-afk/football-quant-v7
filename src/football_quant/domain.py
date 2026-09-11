@@ -27,6 +27,41 @@ class Grade(StrEnum):
     PASS = "PASS"
 
 
+class Capability(StrEnum):
+    NONE = "无法分析"
+    QUALITATIVE = "定性分析"
+    PARTIAL = "部分量化"
+    FULL = "完整量化"
+
+
+class Decision(StrEnum):
+    UNAVAILABLE = "无法计算"
+    REJECTED = "拒绝选择"
+    DIRECTION = "量化方向"
+    NOT_SELECTED = "未入选"
+
+
+class Advantage(StrEnum):
+    UNKNOWN = "优势未知"
+    POSITIVE = "原始EV为正"
+    NONPOSITIVE = "原始EV非正"
+
+
+@dataclass(frozen=True)
+class Qualitative:
+    direction: str
+    supports: tuple[str, ...]
+    objections: tuple[str, ...]
+    uncertainties: tuple[str, ...]
+    evidence_ids: tuple[str, ...]
+
+    def __post_init__(self) -> None:
+        if not all(
+            (self.direction, self.supports, self.objections, self.uncertainties, self.evidence_ids)
+        ):
+            raise ValueError("qualitative direction requires evidence and counterarguments")
+
+
 class Market(StrEnum):
     RESULT = "1x2"
     HANDICAP = "asian_handicap"
@@ -163,16 +198,22 @@ class Candidate:
     quote: Quote
     price: Price | None
     grade: Grade
-    confidence: float
+    confidence: float | None
     completeness: float
     supports: tuple[str, ...]
     objections: tuple[str, ...]
     risks: tuple[str, ...]
     reasons: tuple[str, ...]
     score_components: tuple[tuple[str, float], ...]
+    capability: Capability = Capability.NONE
+    decision: Decision = Decision.UNAVAILABLE
+    advantage: Advantage = Advantage.UNKNOWN
+    data_status: Status = Status.MISSING
+    missing_fields: tuple[str, ...] = ()
 
     def __post_init__(self) -> None:
-        probability(self.confidence)
+        if self.confidence is not None:
+            probability(self.confidence)
         probability(self.completeness)
         if self.grade is not Grade.PASS and self.price is None:
             raise ValueError("non-PASS requires price")
@@ -188,6 +229,11 @@ class MatchAnalysis:
     lambda_home: float | None
     lambda_away: float | None
     scores: tuple[tuple[int, int, float], ...]
+    capability: Capability = Capability.NONE
+    data_status: Status = Status.MISSING
+    model_source: str | None = None
+    qualitative: Qualitative | None = None
+    missing_fields: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)

@@ -5,17 +5,27 @@ from collections import defaultdict
 from dataclasses import replace
 from decimal import Decimal
 
+from football_quant.decisions.quote_validation import check_model_evidence, quote_blockers
 from football_quant.decisions.rating import Assessment, recommend
-from football_quant.domain import Candidate, Grade, Market, MatchAnalysis, Quote, Status
+from football_quant.domain import (
+    Candidate,
+    Capability,
+    Decision,
+    Grade,
+    Market,
+    MatchAnalysis,
+    Quote,
+    Status,
+)
 from football_quant.evidence.quote_history import historical_quotes
 from football_quant.evidence.research import Research, ResearchMatch
-from football_quant.evidence.verification import Claim, freshness, reconcile, window_reason
+from football_quant.evidence.verification import reconcile, window_reason
 from football_quant.markets.completeness import complete_probabilities, line_key
 from football_quant.markets.pricing import price
 from football_quant.models.auxiliary import auxiliary_inputs
 from football_quant.models.counts import CountKind
 from football_quant.models.goals import Scores, score_matrix
-from football_quant.models.inputs import goal_inputs
+from football_quant.models.inputs import goal_inputs, missing_goal_fields
 
 CLAIM_LABELS = {
     "personnel": "人员",
@@ -25,17 +35,20 @@ CLAIM_LABELS = {
     "referee": "裁判",
     "major_change": "重大人员变化",
 }
+MAJOR_CHANGE_BLOCKER = "已确认核心缺阵或大规模轮换，但缺少可核验影响模型；保留情景分析"
 
 
-def context(match: ResearchMatch, research: Research) -> tuple[tuple[str, ...], tuple[str, ...]]:
+def context(
+    match: ResearchMatch, research: Research, family: str = "goals"
+) -> tuple[tuple[str, ...], tuple[str, ...]]:
     conflicts, blockers = [], []
     sources = {e.id: e for e in research.evidence}
     claims = list(match.claims)
-    for q in match.quotes:
-        observed = sources[q.evidence_id].observed_at_utc
-        key = f"quote:{q.bookmaker}:{q.market}:{q.selection}:{q.line}:{q.rules}:{observed}"
-        claims.append(Claim(key, str(q.decimal_odds.normalize()), q.evidence_id))
     for key in sorted({c.key for c in claims}):
+        if (key == "referee" or key.startswith("cards:")) and family != "cards":
+            continue
+        if key.startswith("corners:") and family != "corners":
+            continue
         finding = reconcile(key, tuple(claims), research.evidence)
         if finding.status is Status.CONFLICT:
             message = f"{key}冲突：" + " / ".join(
@@ -45,7 +58,7 @@ def context(match: ResearchMatch, research: Research) -> tuple[tuple[str, ...], 
             blockers.append(f"{key}关键证据冲突待解决")
     major = [c for c in match.claims if c.key == "major_change" and c.value != "none"]
     if major:
-        blockers.append("已确认核心缺阵或大规模轮换，但缺少可核验影响模型；保留情景分析")
+        blockers.append(MAJOR_CHANGE_BLOCKER)
     outside = window_reason(match.fixture, research.started, research.deadline, research.generated)
     if outside:
         blockers.append(outside)
@@ -76,7 +89,8 @@ def rate_group(
         Market.CARD_HANDICAP,
     )
     sources = {e.id: e for e in research.evidence}
-    market_probabilities = complete_probabilities(quotes)
+    validations = tuple(quote_blockers(q, match.quotes, research) for q in quotes)
+    market_probabilities = complete_probabilities(quotes) if not any(validations) else None
     old_quotes, _ = historical_quotes(match.quotes, research.evidence)
     candidates = []
     keys = {c.key for c in match.claims}
@@ -86,20 +100,9 @@ def rate_group(
         missing = list(blockers)
         if q in old_quotes:
             missing.append("历史报价仅用于盘口变化，不能作为当前方向")
-        stale = freshness(sources[q.evidence_id], research.generated)
-        if stale:
-            missing.append(stale)
-        if sources[q.evidence_id].validation_status is not Status.VERIFIED:
-            missing.append("盘口来源未核验")
-        expected_rule = "regular_time"
-        if q.market in (Market.CORNER_TOTAL, Market.CORNER_HANDICAP):
-            expected_rule = "regular_time_corners"
-        if q.market in (Market.CARD_TOTAL, Market.CARD_HANDICAP):
-            expected_rule = "regular_time_yellow_cards"
-        if q.rules != expected_rule:
-            missing.append("全场常规时间结算规则不明确")
+        missing.extend(validations[index])
         p = None
-        if scores:
+        if scores and not missing:
             mp = market_probabilities[index] if market_probabilities else None
             p = price(q, scores, mp, Decimal("0.03"))
         assessment = make_assessment(
@@ -113,7 +116,19 @@ def rate_group(
             missing,
             match,
         )
-        candidates.append(recommend(match.fixture.id, q, p, assessment))
+        candidate = recommend(match.fixture.id, q, p, assessment)
+        if p is None:
+            candidate = replace(candidate, missing_fields=candidate.missing_fields + tuple(missing))
+        if p is None and scores is not None:
+            candidate = replace(
+                candidate,
+                capability=Capability.PARTIAL,
+                missing_fields=tuple(missing),
+                data_status=Status.CONFLICT
+                if any("冲突" in r for r in missing)
+                else Status.UNCERTAIN,
+            )
+        candidates.append(candidate)
     eligible = [c for c in candidates if c.grade is not Grade.PASS]
     if eligible:
         best = max(eligible, key=lambda c: (c.confidence, c.price.ev))
@@ -121,7 +136,10 @@ def rate_group(
             c
             if c is best or c.grade is Grade.PASS
             else replace(
-                c, grade=Grade.PASS, reasons=c.reasons + ("同一完整市场已有综合评分更高方向",)
+                c,
+                grade=Grade.PASS,
+                decision=Decision.NOT_SELECTED,
+                reasons=c.reasons + ("同一市场已有综合评分更高方向",),
             )
             for c in candidates
         ]
@@ -140,6 +158,11 @@ def analyze_match(match: ResearchMatch, research: Research) -> MatchAnalysis:
     ):
         missing.append("历史xG/xGA不完整，进球模型使用可取得的进球统计")
     try:
+        if blockers:
+            raise ValueError("关键事实未通过核验，暂不计算模型：" + "；".join(blockers))
+        check_model_evidence(
+            {k: data[k] for k in ("baseline", "home", "away") if k in data}, research
+        )
         estimate = goal_inputs(json.loads(match.data), research.started)
         scores = score_matrix(estimate.home, estimate.away)
         notes.extend(estimate.notes)
@@ -160,6 +183,7 @@ def analyze_match(match: ResearchMatch, research: Research) -> MatchAnalysis:
         if kind is not None:
             distribution, stability = None, 0
             try:
+                check_model_evidence(data.get(kind.value), research)
                 aux = auxiliary_inputs(data, kind)
                 distribution, stability = aux.scores, 0.5
                 notes.extend(n for n in aux.notes if n not in notes)
@@ -167,16 +191,63 @@ def analyze_match(match: ResearchMatch, research: Research) -> MatchAnalysis:
                     missing.append("缺少裁判历史，罚牌仅为低置信方向")
             except ValueError as exc:
                 missing.append(str(exc))
-        candidates.extend(rate_group(group, distribution, stability, match, research, blockers))
+        group_blockers = blockers
+        if kind is not None:
+            aux_conflicts, group_blockers = context(match, research, kind.value)
+            conflicts = tuple(dict.fromkeys(conflicts + aux_conflicts))
+        candidates.extend(
+            rate_group(group, distribution, stability, match, research, group_blockers)
+        )
+    qualitative = match.qualitative
+    sources = {e.id: e for e in research.evidence}
+    if qualitative and (
+        any(r != MAJOR_CHANGE_BLOCKER for r in blockers)
+        or any(
+            e not in sources or sources[e].validation_status is not Status.VERIFIED
+            for e in qualitative.evidence_ids
+        )
+    ):
+        missing.append("定性方向证据未通过核验，保留缺失说明而不输出方向")
+        qualitative = None
+    capability = Capability.NONE
+    if scores or any(c.price for c in candidates):
+        capability = Capability.PARTIAL
+        if candidates and all(c.capability is Capability.FULL for c in candidates):
+            capability = Capability.FULL
+    elif qualitative or (match.claims and not blockers):
+        capability = Capability.QUALITATIVE
+    notes.extend(
+        f"{CLAIM_LABELS.get(c.key, c.key)}：{c.value} [{c.evidence_id}]" for c in match.claims
+    )
+    quote_conflicts = tuple(
+        dict.fromkeys(reason for c in candidates for reason in c.reasons if "报价冲突" in reason)
+    )
     return MatchAnalysis(
         match.fixture,
         tuple(candidates),
         tuple(notes),
         tuple(missing),
-        conflicts,
+        conflicts + quote_conflicts,
         estimate.home if estimate else None,
         estimate.away if estimate else None,
         scores.common() if scores else (),
+        capability,
+        Status.CONFLICT
+        if conflicts or quote_conflicts
+        else Status.MISSING
+        if missing or any(c.missing_fields for c in candidates)
+        else Status.VERIFIED,
+        (
+            "进失球/xG混合基线（未实证校准）"
+            if any(
+                r.get("xg_for") is not None for side in ("home", "away") for r in data.get(side, [])
+            )
+            else "进失球基线（未实证校准）"
+        )
+        if estimate
+        else None,
+        qualitative,
+        missing_goal_fields(data) + (("quotes",) if not match.quotes else ()),
     )
 
 
@@ -212,4 +283,5 @@ def make_assessment(
         ),
         ("V1参数未经实战校准，情景与价格可能不一致",),
         ("风险EV扣除3个百分点；无实证校准最高C",),
+        scores is not None,
     )

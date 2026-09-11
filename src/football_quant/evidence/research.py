@@ -5,7 +5,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from football_quant.domain import Evidence, Fixture, Mode, Quote
+from football_quant.domain import Evidence, Fixture, Mode, Qualitative, Quote
 from football_quant.evidence.verification import Claim
 
 
@@ -17,6 +17,7 @@ class ResearchMatch:
     data: str
     notes: tuple[str, ...]
     missing: tuple[str, ...]
+    qualitative: Qualitative | None = None
 
 
 @dataclass(frozen=True)

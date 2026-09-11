@@ -2,7 +2,17 @@
 
 from dataclasses import dataclass
 
-from football_quant.domain import Candidate, Grade, Price, Quote, probability
+from football_quant.domain import (
+    Advantage,
+    Candidate,
+    Capability,
+    Decision,
+    Grade,
+    Price,
+    Quote,
+    Status,
+    probability,
+)
 
 WEIGHTS = (0.15, 0.15, 0.10, 0.12, 0.10, 0.08, 0.08, 0.07, 0.07, 0.08)
 NAMES = (
@@ -28,6 +38,7 @@ class Assessment:
     supports: tuple[str, ...]
     objections: tuple[str, ...]
     risks: tuple[str, ...]
+    model_available: bool = False
 
     def __post_init__(self) -> None:
         if len(self.components) != 10:
@@ -43,10 +54,8 @@ def recommend(
     components[4] = max(0, min(1, 0.5 + float(price.ev) * 2)) if price else 0
     score = sum(w * v for w, v in zip(WEIGHTS, components, strict=True))
     blockers = list(assessment.blockers)
-    if price is None:
+    if price is None and not assessment.model_available:
         blockers.append("缺少可核验模型概率")
-    elif price.devig_probability is None:
-        blockers.append("盘口不完整，无法去水比较")
     grade = Grade.PASS
     if not blockers:
         for minimum, label in ((0.90, Grade.S), (0.80, Grade.A), (0.68, Grade.B), (0.50, Grade.C)):
@@ -62,11 +71,32 @@ def recommend(
         quote,
         price,
         grade,
-        score,
+        score if price else None,
         components[1],
         assessment.supports,
         assessment.objections,
         assessment.risks,
         tuple(blockers),
-        tuple(zip(NAMES, components, strict=True)),
+        tuple(zip(NAMES, components, strict=True)) if price else (),
+        Capability.FULL
+        if price and price.devig_probability is not None
+        else Capability.PARTIAL
+        if price
+        else Capability.NONE,
+        Decision.UNAVAILABLE
+        if price is None
+        else Decision.REJECTED
+        if grade is Grade.PASS
+        else Decision.DIRECTION,
+        Advantage.UNKNOWN
+        if price is None
+        else Advantage.POSITIVE
+        if price.ev > 0
+        else Advantage.NONPOSITIVE,
+        Status.MISSING if price is None or price.devig_probability is None else Status.VERIFIED,
+        ("model_probability",)
+        if price is None
+        else ("devig_probability: 缺少同口径可比时间完整互斥市场",)
+        if price.devig_probability is None
+        else (),
     )

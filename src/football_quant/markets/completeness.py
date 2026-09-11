@@ -37,7 +37,11 @@ def complete_probabilities(quotes: tuple[Quote, ...]) -> tuple[float, ...] | Non
     keys = {(q.market, q.bookmaker, q.rules, q.evidence_id, line_key(q)) for q in quotes}
     if len(keys) != 1:
         return None
-    expected = expected_selections(quotes)
+    # Missing exhaustive bins affect de-vig only, not an individual exact-goal EV.
+    try:
+        expected = expected_selections(quotes)
+    except ValueError:
+        return None
     if {q.selection for q in quotes} != expected or len(quotes) != len(expected):
         return None
     return devig(tuple(q.decimal_odds for q in quotes))

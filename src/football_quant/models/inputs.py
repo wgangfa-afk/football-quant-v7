@@ -7,6 +7,30 @@ from football_quant.domain import aware, number
 from football_quant.models.strength import GoalEstimate, History, estimate
 
 
+def missing_goal_fields(data: dict[str, Any]) -> tuple[str, ...]:
+    missing = []
+    for key in ("home", "away", "same_basis", "evidence_id", "excerpt"):
+        if data.get("baseline", {}).get(key) is None:
+            missing.append(f"history.baseline.{key}")
+    for side in ("home", "away"):
+        if not data.get(side):
+            missing.append(f"history.{side}")
+        for index, row in enumerate(data.get(side, [])):
+            for key in (
+                "played",
+                "venue",
+                "goals_for",
+                "goals_against",
+                "opponent_attack",
+                "opponent_defence",
+                "evidence_id",
+                "excerpt",
+            ):
+                if row.get(key) is None:
+                    missing.append(f"history.{side}[{index}].{key}")
+    return tuple(missing)
+
+
 def historical_row(row: dict[str, Any]) -> History:
     return History(
         aware(datetime.fromisoformat(row["played"])),
@@ -26,6 +50,9 @@ def goal_inputs(data: dict[str, Any], at: datetime) -> GoalEstimate:
     for key in ("baseline", "home", "away"):
         if key not in data:
             raise ValueError(f"缺少历史模型输入 {key}")
+    missing = missing_goal_fields(data)
+    if missing:
+        raise ValueError("缺少历史模型字段：" + "；".join(missing))
     baseline = data["baseline"]
     if not baseline.get("evidence_id") or not baseline.get("excerpt"):
         raise ValueError("联赛基准缺少来源")
