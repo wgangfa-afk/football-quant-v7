@@ -1,0 +1,727 @@
+{
+  "mode": "test",
+  "started": "2030-01-01T10:00:00+00:00",
+  "deadline": "2030-01-01T22:00:00+00:00",
+  "generated": "2030-01-01T10:00:00+00:00",
+  "evidence": [
+    {
+      "id": "e1",
+      "source_url": "https://example.com/test-only",
+      "source_name": "Synthetic fixture",
+      "retrieved_at_utc": "2030-01-01T10:00:00+00:00",
+      "observed_at_utc": "2030-01-01T10:00:00+00:00",
+      "published_at_utc": null,
+      "source_type": "test_fixture",
+      "content_hash": "2ab030a9ee2b64b1fa66622f0f475e6e63a9d530c9db70ff49f271c8695cce79",
+      "extraction_method": "synthetic_fixture",
+      "validation_status": "verified",
+      "mode": "test",
+      "snapshot_path": "snapshot.txt"
+    }
+  ],
+  "matches": [
+    {
+      "fixture": {
+        "id": "test-full",
+        "home": "测试主队",
+        "away": "测试客队",
+        "competition": "合成联赛",
+        "kickoff": "2030-01-01T13:00:00+00:00",
+        "evidence_ids": [
+          "e1"
+        ]
+      },
+      "quotes": [
+        {
+          "market": "1x2",
+          "selection": "home",
+          "line": null,
+          "original_value": "2.10",
+          "original_format": "EU",
+          "bookmaker": "TEST BOOK",
+          "rules": "regular_time",
+          "evidence_id": "e1",
+          "excerpt": "{\"bookmaker\": \"TEST BOOK\", \"line\": null, \"market\": \"1x2\", \"original_format\": \"EU\", \"original_value\": \"2.10\", \"rules\": \"regular_time\", \"selection\": \"home\"}"
+        },
+        {
+          "market": "1x2",
+          "selection": "draw",
+          "line": null,
+          "original_value": "2.10",
+          "original_format": "EU",
+          "bookmaker": "TEST BOOK",
+          "rules": "regular_time",
+          "evidence_id": "e1",
+          "excerpt": "{\"bookmaker\": \"TEST BOOK\", \"line\": null, \"market\": \"1x2\", \"original_format\": \"EU\", \"original_value\": \"2.10\", \"rules\": \"regular_time\", \"selection\": \"draw\"}"
+        },
+        {
+          "market": "1x2",
+          "selection": "away",
+          "line": null,
+          "original_value": "2.10",
+          "original_format": "EU",
+          "bookmaker": "TEST BOOK",
+          "rules": "regular_time",
+          "evidence_id": "e1",
+          "excerpt": "{\"bookmaker\": \"TEST BOOK\", \"line\": null, \"market\": \"1x2\", \"original_format\": \"EU\", \"original_value\": \"2.10\", \"rules\": \"regular_time\", \"selection\": \"away\"}"
+        },
+        {
+          "market": "corner_total",
+          "selection": "over",
+          "line": "5.25",
+          "original_value": ".95",
+          "original_format": "HK",
+          "bookmaker": "TEST BOOK",
+          "rules": "regular_time_corners",
+          "evidence_id": "e1",
+          "excerpt": "{\"bookmaker\": \"TEST BOOK\", \"line\": \"5.25\", \"market\": \"corner_total\", \"original_format\": \"HK\", \"original_value\": \".95\", \"rules\": \"regular_time_corners\", \"selection\": \"over\"}"
+        },
+        {
+          "market": "corner_total",
+          "selection": "under",
+          "line": "5.25",
+          "original_value": ".95",
+          "original_format": "HK",
+          "bookmaker": "TEST BOOK",
+          "rules": "regular_time_corners",
+          "evidence_id": "e1",
+          "excerpt": "{\"bookmaker\": \"TEST BOOK\", \"line\": \"5.25\", \"market\": \"corner_total\", \"original_format\": \"HK\", \"original_value\": \".95\", \"rules\": \"regular_time_corners\", \"selection\": \"under\"}"
+        },
+        {
+          "market": "card_total",
+          "selection": "over",
+          "line": "5.25",
+          "original_value": ".95",
+          "original_format": "HK",
+          "bookmaker": "TEST BOOK",
+          "rules": "regular_time_yellow_cards",
+          "evidence_id": "e1",
+          "excerpt": "{\"bookmaker\": \"TEST BOOK\", \"line\": \"5.25\", \"market\": \"card_total\", \"original_format\": \"HK\", \"original_value\": \".95\", \"rules\": \"regular_time_yellow_cards\", \"selection\": \"over\"}"
+        },
+        {
+          "market": "card_total",
+          "selection": "under",
+          "line": "5.25",
+          "original_value": ".95",
+          "original_format": "HK",
+          "bookmaker": "TEST BOOK",
+          "rules": "regular_time_yellow_cards",
+          "evidence_id": "e1",
+          "excerpt": "{\"bookmaker\": \"TEST BOOK\", \"line\": \"5.25\", \"market\": \"card_total\", \"original_format\": \"HK\", \"original_value\": \".95\", \"rules\": \"regular_time_yellow_cards\", \"selection\": \"under\"}"
+        }
+      ],
+      "claims": [
+        {
+          "key": "personnel",
+          "value": "合成测试上下文，非实战事实",
+          "evidence_id": "e1",
+          "excerpt": "{\"key\": \"personnel\", \"value\": \"合成测试上下文，非实战事实\"}"
+        },
+        {
+          "key": "tactics",
+          "value": "合成测试上下文，非实战事实",
+          "evidence_id": "e1",
+          "excerpt": "{\"key\": \"tactics\", \"value\": \"合成测试上下文，非实战事实\"}"
+        },
+        {
+          "key": "schedule",
+          "value": "合成测试上下文，非实战事实",
+          "evidence_id": "e1",
+          "excerpt": "{\"key\": \"schedule\", \"value\": \"合成测试上下文，非实战事实\"}"
+        },
+        {
+          "key": "motivation",
+          "value": "合成测试上下文，非实战事实",
+          "evidence_id": "e1",
+          "excerpt": "{\"key\": \"motivation\", \"value\": \"合成测试上下文，非实战事实\"}"
+        }
+      ],
+      "history": {
+        "baseline": {
+          "home": 1.5,
+          "away": 1.2,
+          "same_basis": true,
+          "evidence_id": "e1",
+          "excerpt": "{\"away\": 1.2, \"home\": 1.5, \"same_basis\": true}"
+        },
+        "home": [
+          {
+            "played": "2029-12-25T10:00:00+00:00",
+            "venue": "home",
+            "goals_for": 2,
+            "goals_against": 2,
+            "opponent_attack": 1.0,
+            "opponent_defence": 1.0,
+            "evidence_id": "e1",
+            "excerpt": "{\"goals_against\": 2, \"goals_for\": 2, \"opponent_attack\": 1.0, \"opponent_defence\": 1.0, \"played\": \"2029-12-25T10:00:00+00:00\", \"venue\": \"home\"}"
+          },
+          {
+            "played": "2029-12-18T10:00:00+00:00",
+            "venue": "home",
+            "goals_for": 3,
+            "goals_against": 1,
+            "opponent_attack": 1.0,
+            "opponent_defence": 1.0,
+            "evidence_id": "e1",
+            "excerpt": "{\"goals_against\": 1, \"goals_for\": 3, \"opponent_attack\": 1.0, \"opponent_defence\": 1.0, \"played\": \"2029-12-18T10:00:00+00:00\", \"venue\": \"home\"}"
+          },
+          {
+            "played": "2029-12-11T10:00:00+00:00",
+            "venue": "home",
+            "goals_for": 1,
+            "goals_against": 2,
+            "opponent_attack": 1.0,
+            "opponent_defence": 1.0,
+            "evidence_id": "e1",
+            "excerpt": "{\"goals_against\": 2, \"goals_for\": 1, \"opponent_attack\": 1.0, \"opponent_defence\": 1.0, \"played\": \"2029-12-11T10:00:00+00:00\", \"venue\": \"home\"}"
+          },
+          {
+            "played": "2029-12-04T10:00:00+00:00",
+            "venue": "home",
+            "goals_for": 2,
+            "goals_against": 1,
+            "opponent_attack": 1.0,
+            "opponent_defence": 1.0,
+            "evidence_id": "e1",
+            "excerpt": "{\"goals_against\": 1, \"goals_for\": 2, \"opponent_attack\": 1.0, \"opponent_defence\": 1.0, \"played\": \"2029-12-04T10:00:00+00:00\", \"venue\": \"home\"}"
+          },
+          {
+            "played": "2029-11-27T10:00:00+00:00",
+            "venue": "home",
+            "goals_for": 3,
+            "goals_against": 2,
+            "opponent_attack": 1.0,
+            "opponent_defence": 1.0,
+            "evidence_id": "e1",
+            "excerpt": "{\"goals_against\": 2, \"goals_for\": 3, \"opponent_attack\": 1.0, \"opponent_defence\": 1.0, \"played\": \"2029-11-27T10:00:00+00:00\", \"venue\": \"home\"}"
+          },
+          {
+            "played": "2029-11-20T10:00:00+00:00",
+            "venue": "home",
+            "goals_for": 1,
+            "goals_against": 1,
+            "opponent_attack": 1.0,
+            "opponent_defence": 1.0,
+            "evidence_id": "e1",
+            "excerpt": "{\"goals_against\": 1, \"goals_for\": 1, \"opponent_attack\": 1.0, \"opponent_defence\": 1.0, \"played\": \"2029-11-20T10:00:00+00:00\", \"venue\": \"home\"}"
+          },
+          {
+            "played": "2029-11-13T10:00:00+00:00",
+            "venue": "home",
+            "goals_for": 2,
+            "goals_against": 2,
+            "opponent_attack": 1.0,
+            "opponent_defence": 1.0,
+            "evidence_id": "e1",
+            "excerpt": "{\"goals_against\": 2, \"goals_for\": 2, \"opponent_attack\": 1.0, \"opponent_defence\": 1.0, \"played\": \"2029-11-13T10:00:00+00:00\", \"venue\": \"home\"}"
+          },
+          {
+            "played": "2029-11-06T10:00:00+00:00",
+            "venue": "home",
+            "goals_for": 3,
+            "goals_against": 1,
+            "opponent_attack": 1.0,
+            "opponent_defence": 1.0,
+            "evidence_id": "e1",
+            "excerpt": "{\"goals_against\": 1, \"goals_for\": 3, \"opponent_attack\": 1.0, \"opponent_defence\": 1.0, \"played\": \"2029-11-06T10:00:00+00:00\", \"venue\": \"home\"}"
+          }
+        ],
+        "away": [
+          {
+            "played": "2029-12-25T10:00:00+00:00",
+            "venue": "away",
+            "goals_for": 2,
+            "goals_against": 2,
+            "opponent_attack": 1.0,
+            "opponent_defence": 1.0,
+            "evidence_id": "e1",
+            "excerpt": "{\"goals_against\": 2, \"goals_for\": 2, \"opponent_attack\": 1.0, \"opponent_defence\": 1.0, \"played\": \"2029-12-25T10:00:00+00:00\", \"venue\": \"away\"}"
+          },
+          {
+            "played": "2029-12-18T10:00:00+00:00",
+            "venue": "away",
+            "goals_for": 3,
+            "goals_against": 1,
+            "opponent_attack": 1.0,
+            "opponent_defence": 1.0,
+            "evidence_id": "e1",
+            "excerpt": "{\"goals_against\": 1, \"goals_for\": 3, \"opponent_attack\": 1.0, \"opponent_defence\": 1.0, \"played\": \"2029-12-18T10:00:00+00:00\", \"venue\": \"away\"}"
+          },
+          {
+            "played": "2029-12-11T10:00:00+00:00",
+            "venue": "away",
+            "goals_for": 1,
+            "goals_against": 2,
+            "opponent_attack": 1.0,
+            "opponent_defence": 1.0,
+            "evidence_id": "e1",
+            "excerpt": "{\"goals_against\": 2, \"goals_for\": 1, \"opponent_attack\": 1.0, \"opponent_defence\": 1.0, \"played\": \"2029-12-11T10:00:00+00:00\", \"venue\": \"away\"}"
+          },
+          {
+            "played": "2029-12-04T10:00:00+00:00",
+            "venue": "away",
+            "goals_for": 2,
+            "goals_against": 1,
+            "opponent_attack": 1.0,
+            "opponent_defence": 1.0,
+            "evidence_id": "e1",
+            "excerpt": "{\"goals_against\": 1, \"goals_for\": 2, \"opponent_attack\": 1.0, \"opponent_defence\": 1.0, \"played\": \"2029-12-04T10:00:00+00:00\", \"venue\": \"away\"}"
+          },
+          {
+            "played": "2029-11-27T10:00:00+00:00",
+            "venue": "away",
+            "goals_for": 3,
+            "goals_against": 2,
+            "opponent_attack": 1.0,
+            "opponent_defence": 1.0,
+            "evidence_id": "e1",
+            "excerpt": "{\"goals_against\": 2, \"goals_for\": 3, \"opponent_attack\": 1.0, \"opponent_defence\": 1.0, \"played\": \"2029-11-27T10:00:00+00:00\", \"venue\": \"away\"}"
+          },
+          {
+            "played": "2029-11-20T10:00:00+00:00",
+            "venue": "away",
+            "goals_for": 1,
+            "goals_against": 1,
+            "opponent_attack": 1.0,
+            "opponent_defence": 1.0,
+            "evidence_id": "e1",
+            "excerpt": "{\"goals_against\": 1, \"goals_for\": 1, \"opponent_attack\": 1.0, \"opponent_defence\": 1.0, \"played\": \"2029-11-20T10:00:00+00:00\", \"venue\": \"away\"}"
+          },
+          {
+            "played": "2029-11-13T10:00:00+00:00",
+            "venue": "away",
+            "goals_for": 2,
+            "goals_against": 2,
+            "opponent_attack": 1.0,
+            "opponent_defence": 1.0,
+            "evidence_id": "e1",
+            "excerpt": "{\"goals_against\": 2, \"goals_for\": 2, \"opponent_attack\": 1.0, \"opponent_defence\": 1.0, \"played\": \"2029-11-13T10:00:00+00:00\", \"venue\": \"away\"}"
+          },
+          {
+            "played": "2029-11-06T10:00:00+00:00",
+            "venue": "away",
+            "goals_for": 3,
+            "goals_against": 1,
+            "opponent_attack": 1.0,
+            "opponent_defence": 1.0,
+            "evidence_id": "e1",
+            "excerpt": "{\"goals_against\": 1, \"goals_for\": 3, \"opponent_attack\": 1.0, \"opponent_defence\": 1.0, \"played\": \"2029-11-06T10:00:00+00:00\", \"venue\": \"away\"}"
+          }
+        ],
+        "corners": {
+          "units": "corners",
+          "home_for": [
+            {
+              "count": 1,
+              "units": "corners",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 1, \"units\": \"corners\"}"
+            },
+            {
+              "count": 2,
+              "units": "corners",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 2, \"units\": \"corners\"}"
+            },
+            {
+              "count": 3,
+              "units": "corners",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 3, \"units\": \"corners\"}"
+            },
+            {
+              "count": 4,
+              "units": "corners",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 4, \"units\": \"corners\"}"
+            },
+            {
+              "count": 5,
+              "units": "corners",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 5, \"units\": \"corners\"}"
+            },
+            {
+              "count": 1,
+              "units": "corners",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 1, \"units\": \"corners\"}"
+            },
+            {
+              "count": 2,
+              "units": "corners",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 2, \"units\": \"corners\"}"
+            },
+            {
+              "count": 3,
+              "units": "corners",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 3, \"units\": \"corners\"}"
+            }
+          ],
+          "home_against": [
+            {
+              "count": 1,
+              "units": "corners",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 1, \"units\": \"corners\"}"
+            },
+            {
+              "count": 2,
+              "units": "corners",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 2, \"units\": \"corners\"}"
+            },
+            {
+              "count": 3,
+              "units": "corners",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 3, \"units\": \"corners\"}"
+            },
+            {
+              "count": 4,
+              "units": "corners",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 4, \"units\": \"corners\"}"
+            },
+            {
+              "count": 5,
+              "units": "corners",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 5, \"units\": \"corners\"}"
+            },
+            {
+              "count": 1,
+              "units": "corners",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 1, \"units\": \"corners\"}"
+            },
+            {
+              "count": 2,
+              "units": "corners",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 2, \"units\": \"corners\"}"
+            },
+            {
+              "count": 3,
+              "units": "corners",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 3, \"units\": \"corners\"}"
+            }
+          ],
+          "away_for": [
+            {
+              "count": 1,
+              "units": "corners",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 1, \"units\": \"corners\"}"
+            },
+            {
+              "count": 2,
+              "units": "corners",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 2, \"units\": \"corners\"}"
+            },
+            {
+              "count": 3,
+              "units": "corners",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 3, \"units\": \"corners\"}"
+            },
+            {
+              "count": 4,
+              "units": "corners",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 4, \"units\": \"corners\"}"
+            },
+            {
+              "count": 5,
+              "units": "corners",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 5, \"units\": \"corners\"}"
+            },
+            {
+              "count": 1,
+              "units": "corners",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 1, \"units\": \"corners\"}"
+            },
+            {
+              "count": 2,
+              "units": "corners",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 2, \"units\": \"corners\"}"
+            },
+            {
+              "count": 3,
+              "units": "corners",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 3, \"units\": \"corners\"}"
+            }
+          ],
+          "away_against": [
+            {
+              "count": 1,
+              "units": "corners",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 1, \"units\": \"corners\"}"
+            },
+            {
+              "count": 2,
+              "units": "corners",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 2, \"units\": \"corners\"}"
+            },
+            {
+              "count": 3,
+              "units": "corners",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 3, \"units\": \"corners\"}"
+            },
+            {
+              "count": 4,
+              "units": "corners",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 4, \"units\": \"corners\"}"
+            },
+            {
+              "count": 5,
+              "units": "corners",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 5, \"units\": \"corners\"}"
+            },
+            {
+              "count": 1,
+              "units": "corners",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 1, \"units\": \"corners\"}"
+            },
+            {
+              "count": 2,
+              "units": "corners",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 2, \"units\": \"corners\"}"
+            },
+            {
+              "count": 3,
+              "units": "corners",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 3, \"units\": \"corners\"}"
+            }
+          ]
+        },
+        "cards": {
+          "units": "yellow_cards",
+          "home_for": [
+            {
+              "count": 1,
+              "units": "yellow_cards",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 1, \"units\": \"yellow_cards\"}"
+            },
+            {
+              "count": 2,
+              "units": "yellow_cards",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 2, \"units\": \"yellow_cards\"}"
+            },
+            {
+              "count": 3,
+              "units": "yellow_cards",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 3, \"units\": \"yellow_cards\"}"
+            },
+            {
+              "count": 4,
+              "units": "yellow_cards",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 4, \"units\": \"yellow_cards\"}"
+            },
+            {
+              "count": 5,
+              "units": "yellow_cards",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 5, \"units\": \"yellow_cards\"}"
+            },
+            {
+              "count": 1,
+              "units": "yellow_cards",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 1, \"units\": \"yellow_cards\"}"
+            },
+            {
+              "count": 2,
+              "units": "yellow_cards",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 2, \"units\": \"yellow_cards\"}"
+            },
+            {
+              "count": 3,
+              "units": "yellow_cards",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 3, \"units\": \"yellow_cards\"}"
+            }
+          ],
+          "home_against": [
+            {
+              "count": 1,
+              "units": "yellow_cards",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 1, \"units\": \"yellow_cards\"}"
+            },
+            {
+              "count": 2,
+              "units": "yellow_cards",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 2, \"units\": \"yellow_cards\"}"
+            },
+            {
+              "count": 3,
+              "units": "yellow_cards",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 3, \"units\": \"yellow_cards\"}"
+            },
+            {
+              "count": 4,
+              "units": "yellow_cards",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 4, \"units\": \"yellow_cards\"}"
+            },
+            {
+              "count": 5,
+              "units": "yellow_cards",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 5, \"units\": \"yellow_cards\"}"
+            },
+            {
+              "count": 1,
+              "units": "yellow_cards",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 1, \"units\": \"yellow_cards\"}"
+            },
+            {
+              "count": 2,
+              "units": "yellow_cards",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 2, \"units\": \"yellow_cards\"}"
+            },
+            {
+              "count": 3,
+              "units": "yellow_cards",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 3, \"units\": \"yellow_cards\"}"
+            }
+          ],
+          "away_for": [
+            {
+              "count": 1,
+              "units": "yellow_cards",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 1, \"units\": \"yellow_cards\"}"
+            },
+            {
+              "count": 2,
+              "units": "yellow_cards",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 2, \"units\": \"yellow_cards\"}"
+            },
+            {
+              "count": 3,
+              "units": "yellow_cards",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 3, \"units\": \"yellow_cards\"}"
+            },
+            {
+              "count": 4,
+              "units": "yellow_cards",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 4, \"units\": \"yellow_cards\"}"
+            },
+            {
+              "count": 5,
+              "units": "yellow_cards",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 5, \"units\": \"yellow_cards\"}"
+            },
+            {
+              "count": 1,
+              "units": "yellow_cards",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 1, \"units\": \"yellow_cards\"}"
+            },
+            {
+              "count": 2,
+              "units": "yellow_cards",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 2, \"units\": \"yellow_cards\"}"
+            },
+            {
+              "count": 3,
+              "units": "yellow_cards",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 3, \"units\": \"yellow_cards\"}"
+            }
+          ],
+          "away_against": [
+            {
+              "count": 1,
+              "units": "yellow_cards",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 1, \"units\": \"yellow_cards\"}"
+            },
+            {
+              "count": 2,
+              "units": "yellow_cards",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 2, \"units\": \"yellow_cards\"}"
+            },
+            {
+              "count": 3,
+              "units": "yellow_cards",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 3, \"units\": \"yellow_cards\"}"
+            },
+            {
+              "count": 4,
+              "units": "yellow_cards",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 4, \"units\": \"yellow_cards\"}"
+            },
+            {
+              "count": 5,
+              "units": "yellow_cards",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 5, \"units\": \"yellow_cards\"}"
+            },
+            {
+              "count": 1,
+              "units": "yellow_cards",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 1, \"units\": \"yellow_cards\"}"
+            },
+            {
+              "count": 2,
+              "units": "yellow_cards",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 2, \"units\": \"yellow_cards\"}"
+            },
+            {
+              "count": 3,
+              "units": "yellow_cards",
+              "evidence_id": "e1",
+              "excerpt": "{\"count\": 3, \"units\": \"yellow_cards\"}"
+            }
+          ]
+        }
+      },
+      "notes": [
+        "固定合成研究包，仅检验导入和分市场计算。"
+      ],
+      "missing": []
+    }
+  ],
+  "coverage_notes": [
+    "仅一场测试赛事，不声称真实覆盖。"
+  ]
+}
