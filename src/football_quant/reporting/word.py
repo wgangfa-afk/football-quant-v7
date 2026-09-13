@@ -1,5 +1,6 @@
 """Word rendering only: all conclusions come from the frozen Report."""
 
+from collections import Counter
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -9,7 +10,7 @@ from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.shared import Inches, Pt, RGBColor
 
-from football_quant.domain import Candidate, Grade, Market, Qualitative, Report
+from football_quant.domain import Candidate, Grade, Market, MatchAnalysis, Qualitative, Report
 
 SHANGHAI = ZoneInfo("Asia/Shanghai")
 ASIAN = {
@@ -152,10 +153,41 @@ def summary(report: Report) -> str:
     for match in report.matches:
         for candidate in match.candidates:
             counts[candidate.grade] += 1
+    selected = sum(
+        1 for match in report.matches if any(c.grade is not Grade.PASS for c in match.candidates)
+    )
+    qualitative = sum(
+        1
+        for match in report.matches
+        if match.qualitative is not None
+        and not any(c.grade is not Grade.PASS for c in match.candidates)
+    )
+    passed = len(report.matches) - selected - qualitative
     return (
-        f"扫描 {len(report.matches)} 场；候选等级："
+        f"扫描 {len(report.matches)} 场；正式量化推荐 {selected} 场；"
+        f"定性方向 {qualitative} 场；PASS {passed} 场。候选等级："
         + "、".join(f"{grade.value} {counts[grade]}" for grade in Grade)
         + "。仅单场方向，不生成串关。"
+    )
+
+
+def match_decision_label(match: MatchAnalysis) -> str:
+    grades = sorted({c.grade.value for c in match.candidates if c.grade is not Grade.PASS})
+    if grades:
+        return "／".join(grades)
+    if match.qualitative is not None:
+        return "方向观察"
+    return "PASS"
+
+
+def needs_deep_analysis(match: MatchAnalysis) -> bool:
+    return bool(
+        match.qualitative
+        or match.candidates
+        or match.scores
+        or match.lambda_home is not None
+        or match.lambda_away is not None
+        or match.conflicts
     )
 
 
@@ -238,7 +270,15 @@ def write_report(report: Report, path: Path) -> None:
             f"{display_odds(c)}，等级{c.grade.value}，EV {c.price.ev:+.2%}。"
         )
     if not directions:
-        doc.add_paragraph("本次无入选的量化方向；定性方向与缺失项见逐场分析。")
+        doc.add_paragraph("本次无入选的量化方向。以下定性方向不包含概率、EV或资金决策。")
+    for match in report.matches:
+        if match.qualitative is not None and not any(
+            c.grade is not Grade.PASS for c in match.candidates
+        ):
+            doc.add_paragraph(
+                f"{match.fixture.home} 对 {match.fixture.away}：方向观察；"
+                f"{match.qualitative.direction}。"
+            )
     doc.add_paragraph("资金决策：第一阶段未启用资金分配，无模拟下注金额。")
     for note in report.coverage_notes:
         doc.add_paragraph(note)
@@ -248,18 +288,21 @@ def write_report(report: Report, path: Path) -> None:
             m.fixture.kickoff.astimezone(SHANGHAI).strftime("%m-%d %H:%M"),
             f"{m.fixture.home} 对 {m.fixture.away}",
             m.fixture.competition,
-            "／".join(sorted({c.grade.value for c in m.candidates})) or "PASS",
+            match_decision_label(m),
             m.capability.value
             + "；"
             + "；".join((m.conflicts or m.missing)[:1])
-            + "；详见逐场说明",
+            + ("；详见深度分析" if needs_deep_analysis(m) else "；逐场原因已列明"),
         )
         for m in report.matches
     ]
     table(doc, ("北京时间", "比赛", "赛事", "等级", "缺失或原因"), rows)
     pools(doc, report)
     doc.add_heading("深度比赛分析与概率定价", 1)
-    for match in report.matches:
+    deep_matches = [match for match in report.matches if needs_deep_analysis(match)]
+    if not deep_matches:
+        doc.add_paragraph("本次没有具备深度分析条件的比赛。")
+    for match in deep_matches:
         doc.add_heading(f"{match.fixture.home} 对 {match.fixture.away}", 2)
         doc.add_paragraph(
             f"数据状态：{STATUS_LABELS[match.data_status]}；分析能力：{match.capability.value}。"
@@ -316,7 +359,11 @@ def pools(doc: DocumentType, report: Report) -> None:
     for title, markets in groups:
         doc.add_heading(title, 1)
         rows = [
-            (f"{m.fixture.home} 对 {m.fixture.away}", selection(c), c.grade.value)
+            (
+                f"{m.fixture.home} 对 {m.fixture.away}",
+                selection(c),
+                "方向观察" if c.grade is Grade.PASS and m.qualitative is not None else c.grade.value,
+            )
             for m in report.matches
             for c in m.candidates
             if c.quote.market in markets
@@ -325,27 +372,43 @@ def pools(doc: DocumentType, report: Report) -> None:
             table(doc, ("比赛", "方向", "等级"), rows)
         else:
             doc.add_paragraph("无候选：本次未取得该市场可定价数据。")
-    doc.add_heading("低置信方向与 PASS", 1)
+    doc.add_heading("定性方向与低置信方向", 1)
     for m in report.matches:
-        if not m.candidates:
+        if m.qualitative is not None:
             doc.add_paragraph(
-                f"{m.fixture.home} 对 {m.fixture.away}：PASS；" + "；".join(m.missing)
+                f"{m.fixture.home} 对 {m.fixture.away}：方向观察；"
+                f"{m.qualitative.direction}；不产生概率、EV或资金决策。"
             )
         for c in m.candidates:
-            if c.grade in (Grade.C, Grade.PASS):
+            if c.grade is Grade.C:
                 doc.add_paragraph(
                     f"{m.fixture.home} 对 {m.fixture.away} {selection(c)}："
                     f"{c.grade.value}；" + "；".join(c.reasons or c.risks)
                 )
+    doc.add_heading("PASS 比赛及原因", 1)
+    pass_matches = [m for m in report.matches if match_decision_label(m) == "PASS"]
+    reasons = Counter(
+        (m.conflicts or m.missing or ("没有足够依据形成方向",))[0] for m in pass_matches
+    )
+    if not reasons:
+        doc.add_paragraph("无。")
+    for reason, count in reasons.most_common():
+        doc.add_paragraph(f"{reason}：{count} 场；逐场比赛与原因见全部赛事扫描表。")
 
 
 def ending(doc: DocumentType, report: Report) -> None:
     doc.add_heading("数据缺失与来源冲突", 1)
-    for m in report.matches:
+    conflict_matches = [m for m in report.matches if m.conflicts]
+    for m in conflict_matches:
         doc.add_paragraph(
             f"{m.fixture.home} 对 {m.fixture.away}："
-            + "；".join(m.missing + m.conflicts or ("未记录冲突",))
+            + "；".join(m.conflicts)
         )
+    if not conflict_matches:
+        doc.add_paragraph("本次未记录比赛身份或关键事实冲突。")
+    missing_counts = Counter(reason for m in report.matches for reason in m.missing)
+    for reason, count in missing_counts.most_common():
+        doc.add_paragraph(f"{reason}：涉及 {count} 场；逐场对应关系见全部赛事扫描表。")
     doc.add_heading("数据来源与采集时间", 1)
     for e in report.evidence:
         hyperlink(doc, f"{e.id} {e.source_name} — {e.source_url}", e.source_url)

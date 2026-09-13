@@ -21,7 +21,7 @@ from football_quant.domain import (
 )
 from football_quant.evidence.verification import Claim
 from football_quant.models.goals import score_matrix
-from football_quant.reporting.word import write_report
+from football_quant.reporting.word import match_decision_label, needs_deep_analysis, summary, write_report
 
 
 def research():
@@ -177,6 +177,79 @@ def test_evidenced_qualitative_without_odds_roundtrips_word(tmp_path) -> None:
     assert "资金决策" in text and "无模拟下注金额" in text
     assert "无量化等级" in text
     assert any(rel.target_ref == r.evidence[0].source_url for rel in doc.part.rels.values())
+
+
+def test_report_separates_qualitative_direction_from_true_pass(tmp_path) -> None:
+    r = research()
+    first = analyze_match(
+        replace(
+            r.matches[0],
+            data="{}",
+            quotes=(),
+            qualitative=Qualitative(
+                "主队不败方向", ("赛程证据 [e1]",), ("样本不足",), ("不能量化",), ("e1",)
+            ),
+        ),
+        r,
+    )
+    second = analyze_match(
+        replace(r.matches[0], fixture=replace(r.matches[0].fixture, id="m2"), data="{}", quotes=()),
+        r,
+    )
+    report = Report(
+        r.mode, r.started, r.deadline, r.generated, r.evidence, (first, second), r.coverage
+    )
+
+    assert match_decision_label(first) == "方向观察"
+    assert match_decision_label(second) == "PASS"
+    assert "定性方向 1 场；PASS 1 场" in summary(report)
+
+    path = tmp_path / "separated.docx"
+    write_report(report, path)
+    doc = Document(path)
+    scan = next(t for t in doc.tables if t.cell(0, 0).text == "北京时间")
+    assert [scan.cell(row, 3).text for row in range(1, len(scan.rows))] == ["方向观察", "PASS"]
+
+
+def test_scan_only_pass_is_not_expanded_as_deep_analysis(tmp_path) -> None:
+    r = research()
+    direction = analyze_match(
+        replace(
+            r.matches[0],
+            data="{}",
+            quotes=(),
+            qualitative=Qualitative(
+                "主队方向", ("证据 [e1]",), ("反向证据 [e1]",), ("不能量化",), ("e1",)
+            ),
+        ),
+        r,
+    )
+    scan_only = analyze_match(
+        replace(
+            r.matches[0],
+            fixture=replace(r.matches[0].fixture, id="m2", home="扫描主队", away="扫描客队"),
+            data="{}",
+            quotes=(),
+        ),
+        r,
+    )
+    assert needs_deep_analysis(direction)
+    assert not needs_deep_analysis(scan_only)
+    report = Report(
+        r.mode,
+        r.started,
+        r.deadline,
+        r.generated,
+        r.evidence,
+        (direction, scan_only),
+        r.coverage,
+    )
+    path = tmp_path / "compact.docx"
+    write_report(report, path)
+    doc = Document(path)
+    deep_headings = [p.text for p in doc.paragraphs if p.style.name == "Heading 2"]
+    assert f"{direction.fixture.home} 对 {direction.fixture.away}" in deep_headings
+    assert "扫描主队 对 扫描客队" not in deep_headings
 
 
 def test_sample_floor_still_enforced() -> None:
